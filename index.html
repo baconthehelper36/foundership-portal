@@ -34,25 +34,19 @@
     <!-- Rules -->
     <div class="mb-10">
       <h3 class="text-2xl font-semibold mb-3 text-cyan-700">Rules</h3>
-      <div id="rulesBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700">
-        <!-- Rules go here -->
-      </div>
+      <div id="rulesBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700"></div>
     </div>
 
     <!-- Tasks -->
     <div class="mb-10">
       <h3 class="text-2xl font-semibold mb-3 text-cyan-700">Your Tasks</h3>
-      <div id="tasksBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700">
-        <!-- Tasks go here -->
-      </div>
+      <div id="tasksBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700"></div>
     </div>
 
     <!-- Info -->
     <div class="mb-10">
       <h3 class="text-2xl font-semibold mb-3 text-cyan-700">Server Info</h3>
-      <div id="infoBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700">
-        <!-- Info go here -->
-      </div>
+      <div id="infoBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700"></div>
     </div>
   </section>
 </div>
@@ -63,7 +57,7 @@ const users = {
   "225": {
     name: "baconthehelper36",
     tasks: [
-      "Head of vision",
+      "Head of Vision",
       "Head of Authority"
     ]
   },
@@ -73,7 +67,16 @@ const users = {
       "Head of Expansion",
       "Head of Executive Oversight"
     ]
-  }
+  },
+
+  // ===== NEW USERS =====
+  "101": { name: "Directive Alpha", tasks: ["Review reports","Monitor operations"] },
+  "102": { name: "Directive Beta", tasks: ["Audit staff","Update protocols"] },
+  "103": { name: "Directive Gamma", tasks: ["Oversee security","Check activity logs"] },
+  "104": { name: "Directive Delta", tasks: ["Manage communications","Brief leadership"] },
+  "105": { name: "Directive Sigma", tasks: ["Inspect divisions","Approve actions"] },
+  "106": { name: "Directive Omega", tasks: ["Strategic planning","Review intel"] },
+  "107": { name: "Directive Nova", tasks: ["Supervise teams","Evaluate performance"] }
 };
 
 // ===== SERVER CONTENT (EDIT THIS) =====
@@ -104,7 +107,6 @@ function login() {
   const user = users[code];
 
   document.getElementById("welcomeText").textContent = `Access Granted — Welcome ${user.name}`;
-
   document.getElementById("rulesBox").innerHTML = serverRules.map(r => `<p>• ${r}</p>`).join("");
   document.getElementById("tasksBox").innerHTML = user.tasks.map(t => `<p>• ${t}</p>`).join("");
   document.getElementById("infoBox").innerHTML = serverInfo.map(i => `<p>• ${i}</p>`).join("");
@@ -113,4 +115,3 @@ function login() {
 
 </body>
 </html>
-
