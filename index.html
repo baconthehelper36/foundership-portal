@@ -1,81 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Directive & Foundership Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gradient-to-br from-cyan-500 via-cyan-400 to-white text-gray-900 font-sans">
-
-<!-- ===== SERVER LOGO (TOP RIGHT) ===== -->
-<img src="https://i.imgur.com/GOk8CHv.png"
-     class="fixed top-4 right-4 w-20 h-20 rounded-xl shadow-lg border border-white/50 z-50"
-     alt="Server Logo" />
-
-<!-- ===== SESSION STATUS PANEL ===== -->
-<div class="fixed bottom-4 right-4 bg-white/90 backdrop-blur p-4 rounded-xl shadow-xl border border-cyan-200 w-48 z-50">
-  <h4 class="font-bold text-cyan-700 mb-1">Server Status</h4>
-  <p id="sessionStatus" class="text-sm">Session: No</p>
-  <p id="playerCount" class="text-sm">Players: --</p>
-</div>
-
-<!-- LOGIN SCREEN -->
-<div id="loginScreen" class="min-h-screen flex items-center justify-center">
-  <div class="bg-white/90 backdrop-blur p-10 rounded-2xl shadow-2xl w-96 text-center border border-cyan-200">
-    <h1 class="text-3xl font-bold mb-6 text-cyan-700">Secure Access</h1>
-
-    <input id="codeInput" type="password" placeholder="Enter your code"
-      class="w-full p-3 rounded-lg bg-white border border-cyan-300 mb-4 outline-none focus:ring-2 focus:ring-cyan-400" />
-
-    <button onclick="login()"
-      class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-600 hover:to-cyan-500 text-white p-3 rounded-xl font-semibold shadow-lg">
-      Login
-    </button>
-
-    <p id="errorText" class="text-red-500 mt-3 hidden">Unauthorized code.</p>
-  </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" class="hidden">
-  <nav class="bg-gradient-to-r from-cyan-600 to-cyan-400 p-5 text-xl font-bold text-white shadow-lg">
-    Directive & Foundership Dashboard
-  </nav>
-
-  <section class="p-8">
-    <h2 id="welcomeText" class="text-4xl font-bold mb-10 text-cyan-800">Welcome</h2>
-
-    <!-- Rules -->
-    <div class="mb-10">
-      <h3 class="text-2xl font-semibold mb-3 text-cyan-700">Rules</h3>
-      <div id="rulesBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700"></div>
-    </div>
-
-    <!-- Tasks -->
-    <div class="mb-10">
-      <h3 class="text-2xl font-semibold mb-3 text-cyan-700">Your Tasks</h3>
-      <div id="tasksBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700"></div>
-    </div>
-
-    <!-- Info -->
-    <div class="mb-10">
-      <h3 class="text-2xl font-semibold mb-3 text-cyan-700">Server Info</h3>
-      <div id="infoBox" class="bg-white/90 backdrop-blur p-5 rounded-xl shadow-md border border-cyan-200 text-gray-700"></div>
-    </div>
-  </section>
-</div>
-
 <script>
 // ===== ERLC API =====
 const ERLC_API_KEY = "fdWKTlzxNscCtrAOfHKj-ltorbrRrkLufkrZtczFpOjPugSKwUagwpjzYSRYR";
 
-// ===== SESSION CONTROL (YOU CONTROL THIS) =====
+// ===== SESSION CONTROL =====
 let sessionActive = false;
-
-// ONLY YOU CAN CHANGE SESSION
 const SESSION_CONTROLLER = "baconthehelper36";
+let currentUserName = null;
 
 // ===== USER DATABASE =====
 const users = {
@@ -102,37 +32,65 @@ const serverInfo = ["WORK IN PROGRESS!!"];
 
 // ===== LOGIN =====
 function login() {
-  const code = document.getElementById("codeInput").value.trim();
+  try {
+    const code = document.getElementById("codeInput").value.trim();
 
-  if (!users[code]) {
-    document.getElementById("errorText").classList.remove("hidden");
-    return;
+    if (!users[code]) {
+      document.getElementById("errorText").classList.remove("hidden");
+      return;
+    }
+
+    const user = users[code];
+    currentUserName = user.name;
+
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+
+    document.getElementById("welcomeText").textContent =
+      `Access Granted — Welcome ${user.name}`;
+
+    document.getElementById("rulesBox").innerHTML =
+      serverRules.map(r => `<p>• ${r}</p>`).join("");
+
+    document.getElementById("tasksBox").innerHTML =
+      user.tasks.map(t => `<p>• ${t}</p>`).join("");
+
+    document.getElementById("infoBox").innerHTML =
+      serverInfo.map(i => `<p>• ${i}</p>`).join("");
+
+    // ⭐ SAFE ADMIN PANEL CHECK
+    const panel = document.getElementById("sessionControlPanel");
+    if (panel && currentUserName === SESSION_CONTROLLER) {
+      panel.classList.remove("hidden");
+    }
+
+    updateSessionUI();
+
+  } catch (err) {
+    console.error("Login error:", err);
   }
-
-  const user = users[code];
-
-  document.getElementById("loginScreen").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-
-  document.getElementById("welcomeText").textContent =
-    `Access Granted — Welcome ${user.name}`;
-
-  document.getElementById("rulesBox").innerHTML =
-    serverRules.map(r => `<p>• ${r}</p>`).join("");
-
-  document.getElementById("tasksBox").innerHTML =
-    user.tasks.map(t => `<p>• ${t}</p>`).join("");
-
-  document.getElementById("infoBox").innerHTML =
-    serverInfo.map(i => `<p>• ${i}</p>`).join("");
-
-  updateSessionUI();
 }
 
-// ===== SESSION UI =====
+// ===== TOGGLE SESSION =====
+function toggleSession() {
+  if (currentUserName !== SESSION_CONTROLLER) return;
+
+  sessionActive = !sessionActive;
+  updateSessionUI();
+
+  const btn = document.getElementById("toggleSessionBtn");
+  if (btn) {
+    btn.textContent = sessionActive ? "End Session" : "Start Session";
+  }
+}
+
+// ===== UPDATE STATUS =====
 function updateSessionUI() {
-  document.getElementById("sessionStatus").textContent =
-    "Session: " + (sessionActive ? "Yes" : "No");
+  const status = document.getElementById("sessionStatus");
+  if (status) {
+    status.textContent =
+      "Session: " + (sessionActive ? "Yes" : "No");
+  }
 }
 
 // ===== PLAYER COUNT =====
@@ -140,18 +98,22 @@ async function fetchPlayerCount() {
   try {
     const res = await fetch(
       "https://api.policeroleplay.community/v1/server",
-      {
-        headers: { "Server-Key": ERLC_API_KEY }
-      }
+      { headers: { "Server-Key": ERLC_API_KEY } }
     );
 
     const data = await res.json();
 
-    document.getElementById("playerCount").textContent =
-      "Players: " + (data.CurrentPlayers ?? "--");
+    const countEl = document.getElementById("playerCount");
+    if (countEl) {
+      countEl.textContent =
+        "Players: " + (data.CurrentPlayers ?? "--");
+    }
+
   } catch {
-    document.getElementById("playerCount").textContent =
-      "Players: Error";
+    const countEl = document.getElementById("playerCount");
+    if (countEl) {
+      countEl.textContent = "Players: Error";
+    }
   }
 }
 
@@ -159,7 +121,3 @@ async function fetchPlayerCount() {
 fetchPlayerCount();
 setInterval(fetchPlayerCount, 30000);
 </script>
-
-</body>
-</html>
-
