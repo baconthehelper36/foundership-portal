@@ -57,9 +57,10 @@ function login() {
   document.getElementById("infoBox").innerHTML =
     serverInfo.map(i => `<p>• ${i}</p>`).join("");
 
-  // ⭐ SHOW ADMIN PANEL IF YOU
-  if (currentUserName === SESSION_CONTROLLER) {
-    document.getElementById("sessionControlPanel").classList.remove("hidden");
+  // ⭐ SHOW ADMIN PANEL
+  const panel = document.getElementById("sessionControlPanel");
+  if (currentUserName === SESSION_CONTROLLER && panel) {
+    panel.classList.remove("hidden");
   }
 
   updateSessionUI();
@@ -71,15 +72,22 @@ function toggleSession() {
 
   sessionActive = !sessionActive;
   updateSessionUI();
-
-  document.getElementById("toggleSessionBtn").textContent =
-    sessionActive ? "End Session" : "Start Session";
 }
 
 // ===== UPDATE STATUS =====
 function updateSessionUI() {
-  document.getElementById("sessionStatus").textContent =
-    "Session: " + (sessionActive ? "Yes" : "No");
+  const statusEl = document.getElementById("sessionStatus");
+  const btnEl = document.getElementById("toggleSessionBtn");
+
+  if (statusEl) {
+    statusEl.textContent =
+      "Session: " + (sessionActive ? "Yes" : "No");
+  }
+
+  if (btnEl) {
+    btnEl.textContent =
+      sessionActive ? "End Session" : "Start Session";
+  }
 }
 
 // ===== PLAYER COUNT =====
@@ -92,11 +100,16 @@ async function fetchPlayerCount() {
 
     const data = await res.json();
 
-    document.getElementById("playerCount").textContent =
-      "Players: " + (data.CurrentPlayers ?? "--");
+    const playerEl = document.getElementById("playerCount");
+    if (playerEl) {
+      playerEl.textContent =
+        "Players: " + (data.CurrentPlayers ?? "--");
+    }
   } catch {
-    document.getElementById("playerCount").textContent =
-      "Players: Error";
+    const playerEl = document.getElementById("playerCount");
+    if (playerEl) {
+      playerEl.textContent = "Players: Error";
+    }
   }
 }
 
