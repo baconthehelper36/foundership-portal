@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foundership Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white font-sans">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center">
+  <div class="bg-gray-900 p-10 rounded-2xl shadow-xl w-96 text-center">
+    <h1 class="text-3xl font-bold mb-6">Secure Access</h1>
+    <input id="codeInput" type="password" placeholder="Enter your code" 
+      class="w-full p-3 rounded-lg bg-gray-800 mb-4 outline-none" />
+    <button onclick="login()" 
+      class="w-full bg-cyan-500 hover:bg-cyan-600 p-3 rounded-xl font-semibold">
+      Login
+    </button>
+    <p id="errorText" class="text-red-400 mt-3 hidden">Unauthorized code.</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+  <nav class="bg-gray-900 p-5 text-xl font-bold">Foundership Dashboard</nav>
+
+  <section class="p-8">
+    <h2 id="welcomeText" class="text-4xl font-bold mb-10">Welcome</h2>
+
+    <!-- Rules -->
+    <div class="mb-10">
+      <h3 class="text-2xl font-semibold mb-3">Rules</h3>
+      <div id="rulesBox" class="bg-gray-900 p-5 rounded-xl text-gray-300">
+        <!-- Rules go here -->
+      </div>
+    </div>
+
+    <!-- Tasks -->
+    <div class="mb-10">
+      <h3 class="text-2xl font-semibold mb-3">Your Tasks</h3>
+      <div id="tasksBox" class="bg-gray-900 p-5 rounded-xl text-gray-300">
+        <!-- Tasks go here -->
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="mb-10">
+      <h3 class="text-2xl font-semibold mb-3">Server Info</h3>
+      <div id="infoBox" class="bg-gray-900 p-5 rounded-xl text-gray-300">
+        <!-- Info go here -->
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// ===== USER DATABASE (EDIT THIS) =====
+const users = {
+  "225": {
+    name: "Landon",
+    tasks: [
+      "Review staff applications",
+      "Check moderation logs"
+    ]
+  },
+  "556": {
+    name: "Director Mike",
+    tasks: [
+      "Prepare weekly report",
+      "Oversee supervisors"
+    ]
+  }
+};
+
+// ===== SERVER CONTENT (EDIT THIS) =====
+const serverRules = [
+  "Respect all members.",
+  "No leaking confidential info.",
+  "Follow staff chain of command."
+];
+
+const serverInfo = [
+  "Foundership access only.",
+  "All activity is monitored.",
+  "Contact admin for issues."
+];
+
+// ===== LOGIN FUNCTION =====
+function login() {
+  const code = document.getElementById("codeInput").value.trim();
+
+  if (!users[code]) {
+    document.getElementById("errorText").classList.remove("hidden");
+    return;
+  }
+
+  // Hide login
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+
+  const user = users[code];
+
+  // Welcome text
+  document.getElementById("welcomeText").textContent = `Welcome ${user.name}`;
+
+  // Fill rules
+  document.getElementById("rulesBox").innerHTML = serverRules.map(r => `<p>• ${r}</p>`).join("");
+
+  // Fill tasks
+  document.getElementById("tasksBox").innerHTML = user.tasks.map(t => `<p>• ${t}</p>`).join("");
+
+  // Fill info
+  document.getElementById("infoBox").innerHTML = serverInfo.map(i => `<p>• ${i}</p>`).join("");
+}
+</script>
+
+</body>
+</html>
